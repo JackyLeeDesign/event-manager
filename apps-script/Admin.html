@@ -1,0 +1,396 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <base target="_top">
+  <style>
+    :root {
+      --bg: #f5f2ed;
+      --panel: #ffffff;
+      --ink: #211f1c;
+      --muted: #6b655d;
+      --line: #ddd5cc;
+      --primary: #1f6f5b;
+      --danger: #a43c32;
+      --soft: #e8f2ef;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background: var(--bg);
+      color: var(--ink);
+    }
+
+    main {
+      width: min(980px, calc(100% - 32px));
+      margin: 0 auto;
+      padding: 28px 0 44px;
+    }
+
+    header {
+      margin-bottom: 18px;
+    }
+
+    h1 {
+      margin: 0 0 8px;
+      font-size: clamp(28px, 4vw, 40px);
+      letter-spacing: 0;
+    }
+
+    p {
+      margin: 0;
+      color: var(--muted);
+      line-height: 1.7;
+    }
+
+    .panel {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 22px;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 16px;
+    }
+
+    .full {
+      grid-column: 1 / -1;
+    }
+
+    fieldset {
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 16px;
+      margin: 0 0 16px;
+    }
+
+    legend {
+      padding: 0 8px;
+      font-weight: 800;
+    }
+
+    label {
+      display: grid;
+      gap: 7px;
+      font-weight: 700;
+    }
+
+    input,
+    select {
+      width: 100%;
+      min-height: 42px;
+      border: 1px solid var(--line);
+      border-radius: 6px;
+      padding: 9px 11px;
+      font: inherit;
+      background: #fff;
+      color: var(--ink);
+    }
+
+    input:focus,
+    select:focus {
+      outline: 3px solid #cfe5de;
+      border-color: var(--primary);
+    }
+
+    small {
+      color: var(--muted);
+      font-weight: 500;
+      line-height: 1.5;
+    }
+
+    .actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 16px;
+    }
+
+    button {
+      min-height: 42px;
+      border: 1px solid transparent;
+      border-radius: 6px;
+      padding: 9px 14px;
+      font: inherit;
+      font-weight: 800;
+      cursor: pointer;
+    }
+
+    .primary {
+      background: var(--primary);
+      color: #fff;
+    }
+
+    .secondary {
+      background: var(--soft);
+      color: #155242;
+      border-color: #bdd9d0;
+    }
+
+    .danger {
+      background: #fff2ef;
+      color: var(--danger);
+      border-color: #e2bab2;
+    }
+
+    .notice {
+      display: none;
+      margin-top: 14px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 13px 14px;
+      background: #fbfaf8;
+      color: var(--muted);
+      line-height: 1.6;
+    }
+
+    .notice.show {
+      display: block;
+    }
+
+    .locked {
+      max-width: 520px;
+    }
+
+    .hidden {
+      display: none;
+    }
+
+    @media (max-width: 760px) {
+      main {
+        width: min(100% - 24px, 620px);
+      }
+
+      .grid {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+  <main>
+    <header>
+      <h1>活動報名管理後台</h1>
+      <p>管理表單連結、回覆工作表、key 欄位、管理員電話與管理密碼。儲存後不需要重新部署，重新整理前台即可套用。</p>
+    </header>
+
+    <section id="lockPanel" class="panel locked">
+      <form id="loginForm">
+        <label>
+          管理密碼
+          <input id="loginPasscode" type="password" autocomplete="current-password" required>
+          <small>初次使用預設為 admin-change-me，儲存設定時請改成自己的管理密碼。</small>
+        </label>
+        <div class="actions">
+          <button class="primary" type="submit">進入後台</button>
+        </div>
+      </form>
+      <div id="loginNotice" class="notice"></div>
+    </section>
+
+    <section id="adminPanel" class="panel hidden">
+      <form id="configForm">
+        <fieldset>
+          <legend>Google 來源</legend>
+          <div class="grid">
+            <label class="full">
+              Google Sheet ID
+              <input name="spreadsheetId" required>
+            </label>
+            <label>
+              回覆工作表
+              <input name="sheetName" list="sheetNames" required>
+              <datalist id="sheetNames"></datalist>
+            </label>
+            <label>
+              Google Form 編輯 ID 或編輯網址
+              <input name="formId" required>
+            </label>
+            <label class="full">
+              公開填寫連結
+              <input name="publishedFormUrl" required>
+            </label>
+            <label>
+              管理員聯絡電話
+              <input name="adminPhone" inputmode="tel">
+            </label>
+          </div>
+        </fieldset>
+
+        <fieldset>
+          <legend>Key 欄位</legend>
+          <div class="grid">
+            <label>
+              Key 欄位 1
+              <input name="nameColumn" required>
+            </label>
+            <label>
+              Key 欄位 2
+              <input name="phoneColumn" required>
+            </label>
+            <label>
+              法名欄位
+              <input name="dharmaNameColumn">
+              <small>法名不是 key，只用來顯示與預填表單。</small>
+            </label>
+          </div>
+        </fieldset>
+
+        <fieldset>
+          <legend>必要系統欄位</legend>
+          <div class="grid">
+            <label>
+              時間戳記欄位
+              <input name="timestampColumn" required>
+            </label>
+            <label>
+              系統 Key 欄位
+              <input name="systemKeyColumn" required>
+            </label>
+            <label>
+              修改連結欄位
+              <input name="editUrlColumn" required>
+            </label>
+          </div>
+        </fieldset>
+
+        <fieldset>
+          <legend>管理密碼</legend>
+          <div class="grid">
+            <label>
+              目前管理密碼
+              <input name="currentAdminPasscode" type="password" autocomplete="current-password" required>
+            </label>
+            <label>
+              新管理密碼
+              <input name="newAdminPasscode" type="password" autocomplete="new-password">
+              <small>留空代表不變更。</small>
+            </label>
+          </div>
+        </fieldset>
+
+        <div class="actions">
+          <button class="primary" type="submit">儲存設定</button>
+          <button id="backfillButton" class="secondary" type="button">補寫既有修改連結</button>
+          <button id="resetButton" class="danger" type="button">還原預設設定</button>
+        </div>
+      </form>
+      <div id="notice" class="notice"></div>
+    </section>
+  </main>
+
+  <script>
+    const state = {
+      adminPasscode: '',
+    };
+
+    const lockPanel = document.getElementById('lockPanel');
+    const adminPanel = document.getElementById('adminPanel');
+    const loginForm = document.getElementById('loginForm');
+    const configForm = document.getElementById('configForm');
+    const loginNotice = document.getElementById('loginNotice');
+    const notice = document.getElementById('notice');
+    const sheetNames = document.getElementById('sheetNames');
+    const backfillButton = document.getElementById('backfillButton');
+    const resetButton = document.getElementById('resetButton');
+
+    loginForm.addEventListener('submit', (event) => {
+      event.preventDefault();
+      state.adminPasscode = document.getElementById('loginPasscode').value;
+      show(loginNotice, '讀取設定中...');
+
+      google.script.run
+        .withSuccessHandler((payload) => {
+          lockPanel.classList.add('hidden');
+          adminPanel.classList.remove('hidden');
+          fillForm(payload.config);
+          fillSheetNames(payload.sheetNames);
+          show(notice, '設定已載入。');
+        })
+        .withFailureHandler((error) => show(loginNotice, error.message || '無法讀取設定。'))
+        .getAdminConfig({ adminPasscode: state.adminPasscode });
+    });
+
+    configForm.addEventListener('submit', (event) => {
+      event.preventDefault();
+      const payload = Object.fromEntries(new FormData(configForm).entries());
+      payload.currentAdminPasscode = payload.currentAdminPasscode || state.adminPasscode;
+      show(notice, '儲存中...');
+
+      google.script.run
+        .withSuccessHandler((response) => {
+          if (payload.newAdminPasscode) state.adminPasscode = payload.newAdminPasscode;
+          fillForm(response.config);
+          show(notice, response.message);
+        })
+        .withFailureHandler((error) => show(notice, error.message || '儲存失敗。'))
+        .saveAdminConfig(payload);
+    });
+
+    backfillButton.addEventListener('click', () => {
+      show(notice, '補寫修改連結中，資料多時可能需要一點時間...');
+      google.script.run
+        .withSuccessHandler((response) => show(notice, response.message))
+        .withFailureHandler((error) => show(notice, error.message || '補寫失敗。'))
+        .adminBackfillEditUrls({ adminPasscode: state.adminPasscode });
+    });
+
+    resetButton.addEventListener('click', () => {
+      if (!confirm('確定要還原預設設定？')) return;
+      show(notice, '還原中...');
+      google.script.run
+        .withSuccessHandler((response) => {
+          fillForm(response.config);
+          show(notice, response.message);
+        })
+        .withFailureHandler((error) => show(notice, error.message || '還原失敗。'))
+        .resetAdminConfig({ adminPasscode: state.adminPasscode });
+    });
+
+    function fillForm(config) {
+      setValue('spreadsheetId', config.spreadsheetId);
+      setValue('sheetName', config.sheetName);
+      setValue('publishedFormUrl', config.publishedFormUrl);
+      setValue('formId', config.formId);
+      setValue('adminPhone', config.adminPhone);
+      setValue('timestampColumn', config.columns.timestamp);
+      setValue('nameColumn', config.columns.name);
+      setValue('dharmaNameColumn', config.columns.dharmaName);
+      setValue('phoneColumn', config.columns.phone);
+      setValue('systemKeyColumn', config.columns.systemKey);
+      setValue('editUrlColumn', config.columns.editUrl);
+      setValue('currentAdminPasscode', state.adminPasscode);
+      setValue('newAdminPasscode', '');
+    }
+
+    function fillSheetNames(names) {
+      sheetNames.innerHTML = '';
+      (names || []).forEach((name) => {
+        const option = document.createElement('option');
+        option.value = name;
+        sheetNames.appendChild(option);
+      });
+    }
+
+    function setValue(name, value) {
+      const field = configForm.elements[name];
+      if (field) field.value = value || '';
+    }
+
+    function show(target, message) {
+      target.textContent = message;
+      target.classList.add('show');
+    }
+  </script>
+</body>
+</html>

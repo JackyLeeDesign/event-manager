@@ -1,0 +1,2 @@
+前端：https://script.google.com/macros/s/AKfycbxashKJTlPa7ibgis7GaFRn0bAmCps6T1Ppc76JPnIyRG23pJoZ3LJsqX1nyDO3itCaBQ/exec
+後端：https://script.google.com/macros/s/AKfycbxashKJTlPa7ibgis7GaFRn0bAmCps6T1Ppc76JPnIyRG23pJoZ3LJsqX1nyDO3itCaBQ/exec?page=admin

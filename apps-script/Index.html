@@ -1,0 +1,622 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <base target="_top">
+  <style>
+    :root {
+      color-scheme: light;
+      --bg: #f6f3ee;
+      --panel: #ffffff;
+      --ink: #211f1c;
+      --muted: #6d675f;
+      --line: #ded7ce;
+      --primary: #1f6f5b;
+      --primary-dark: #155242;
+      --warn: #8a5a16;
+      --soft: #e8f2ef;
+      --soft-warn: #fff6df;
+      --field: #fff;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background: var(--bg);
+      color: var(--ink);
+    }
+
+    main {
+      width: min(720px, calc(100% - 32px));
+      margin: 0 auto;
+      padding: 28px 0 76px;
+    }
+
+    .shell {
+      display: grid;
+      gap: 16px;
+    }
+
+    .intro,
+    .panel {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 22px;
+    }
+
+    h1 {
+      margin: 0 0 12px;
+      font-size: clamp(30px, 7vw, 44px);
+      line-height: 1.15;
+      letter-spacing: 0;
+    }
+
+    p {
+      margin: 0;
+      color: var(--muted);
+      line-height: 1.75;
+      font-size: 16px;
+    }
+
+    form {
+      display: grid;
+      gap: 14px;
+    }
+
+    label {
+      display: grid;
+      gap: 7px;
+      font-weight: 800;
+      font-size: 17px;
+    }
+
+    input {
+      width: 100%;
+      min-height: 48px;
+      border: 1px solid var(--line);
+      border-radius: 6px;
+      padding: 10px 12px;
+      font: inherit;
+      font-size: 17px;
+      background: var(--field);
+      color: var(--ink);
+    }
+
+    fieldset {
+      border: 0;
+      margin: 0;
+      padding: 0;
+      display: grid;
+      gap: 9px;
+    }
+
+    legend {
+      padding: 0;
+      font-weight: 800;
+      font-size: 17px;
+    }
+
+    .choice-row {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 10px;
+    }
+
+    .choice-row label {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      min-height: 48px;
+      border: 1px solid var(--line);
+      border-radius: 6px;
+      padding: 10px 12px;
+      background: var(--field);
+      font-weight: 800;
+      cursor: pointer;
+    }
+
+    input[type="radio"] {
+      width: 18px;
+      min-height: 18px;
+      height: 18px;
+      margin: 0;
+      accent-color: var(--primary);
+    }
+
+    .hidden {
+      display: none;
+    }
+
+    input:focus {
+      outline: 3px solid #cfe5de;
+      border-color: var(--primary);
+    }
+
+    .actions {
+      display: grid;
+      gap: 10px;
+      margin-top: 8px;
+    }
+
+    button,
+    a.button {
+      width: 100%;
+      min-height: 48px;
+      border: 1px solid transparent;
+      border-radius: 6px;
+      padding: 11px 14px;
+      font: inherit;
+      font-weight: 800;
+      text-align: center;
+      text-decoration: none;
+      cursor: pointer;
+    }
+
+    button.primary,
+    a.button.primary {
+      background: var(--primary);
+      color: #fff;
+    }
+
+    button.primary:hover,
+    a.button.primary:hover {
+      background: var(--primary-dark);
+    }
+
+    button.secondary,
+    a.button.secondary {
+      background: var(--soft);
+      color: var(--primary-dark);
+      border-color: #bdd9d0;
+    }
+
+    button.warn,
+    a.button.warn {
+      background: var(--soft-warn);
+      color: var(--warn);
+      border-color: #ead095;
+    }
+
+    .result {
+      display: none;
+      margin-top: 18px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 16px;
+      background: #fbfaf8;
+    }
+
+    .result.show {
+      display: block;
+    }
+
+    .result strong {
+      display: block;
+      margin-bottom: 8px;
+      font-size: 18px;
+    }
+
+    .details {
+      display: grid;
+      gap: 6px;
+      margin: 12px 0 16px;
+      color: var(--muted);
+      line-height: 1.6;
+    }
+
+    .result-actions {
+      display: grid;
+      gap: 10px;
+      margin-top: 14px;
+    }
+
+    .loading {
+      opacity: .72;
+      pointer-events: none;
+    }
+
+    .field-error {
+      display: none;
+      color: #9f2d20;
+      font-size: 14px;
+      font-weight: 700;
+      line-height: 1.5;
+    }
+
+    .field-error.show {
+      display: block;
+    }
+
+    .footer-contact {
+      position: fixed;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      z-index: 10;
+      margin: 0;
+      padding: 9px 14px;
+      border-top: 1px solid var(--line);
+      background: rgba(246, 243, 238, .96);
+      backdrop-filter: blur(6px);
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.6;
+      text-align: center;
+    }
+
+    .footer-contact a {
+      color: var(--primary-dark);
+      font-weight: 800;
+      text-decoration: none;
+    }
+
+    @media (max-width: 520px) {
+      main {
+        width: min(100% - 20px, 520px);
+        padding: 14px 0 28px;
+      }
+
+      .intro,
+      .panel {
+        padding: 18px;
+      }
+
+      h1 {
+        font-size: 32px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <main>
+    <div class="shell">
+      <section class="intro">
+        <h1>台中慈悲三昧水懺法會線上報名</h1>
+        <p>請先輸入姓名與手機號碼，系統將協助確認是否已有報名紀錄。若已有紀錄，可進行修改或取消；若查無紀錄，則可填寫新報名表。</p>
+      </section>
+
+      <section class="panel">
+        <form id="keyForm">
+          <label>
+            <span id="nameLabel">參加蓮友姓名</span>
+            <input id="name" name="name" autocomplete="name" required>
+            <span id="nameError" class="field-error"></span>
+          </label>
+
+          <fieldset>
+            <legend>是否有法名</legend>
+            <div class="choice-row">
+              <label>
+                <input type="radio" name="hasDharmaName" value="yes">
+                有法名
+              </label>
+              <label>
+                <input type="radio" name="hasDharmaName" value="no" checked>
+                沒有法名
+              </label>
+            </div>
+          </fieldset>
+
+          <label id="dharmaNameField" class="hidden">
+            <span id="dharmaNameLabel">法名</span>
+            <input id="dharmaName" name="dharmaName">
+            <span id="dharmaNameError" class="field-error"></span>
+          </label>
+
+          <label>
+            <span id="phoneLabel">手機</span>
+            <input id="phone" name="phone" inputmode="numeric" autocomplete="tel" maxlength="10" required>
+            <span id="phoneError" class="field-error"></span>
+          </label>
+
+          <div class="actions">
+            <button class="primary" type="submit" data-mode="new">新報名</button>
+            <button class="secondary" type="submit" data-mode="edit">重新報名或取消報名</button>
+          </div>
+        </form>
+
+        <div id="result" class="result" aria-live="polite"></div>
+      </section>
+
+    </div>
+  </main>
+  <footer id="footerContact" class="footer-contact">若有任何問題，請聯繫管理員。</footer>
+
+  <script>
+    const state = {
+      formUrl: '#',
+      mode: 'new',
+    };
+
+    const els = {
+      keyForm: document.getElementById('keyForm'),
+      result: document.getElementById('result'),
+      nameLabel: document.getElementById('nameLabel'),
+      dharmaNameLabel: document.getElementById('dharmaNameLabel'),
+      phoneLabel: document.getElementById('phoneLabel'),
+      nameInput: document.getElementById('name'),
+      dharmaNameField: document.getElementById('dharmaNameField'),
+      dharmaNameInput: document.getElementById('dharmaName'),
+      phoneInput: document.getElementById('phone'),
+      nameError: document.getElementById('nameError'),
+      dharmaNameError: document.getElementById('dharmaNameError'),
+      phoneError: document.getElementById('phoneError'),
+      footerContact: document.getElementById('footerContact'),
+      dharmaNameOptions: Array.from(document.querySelectorAll('input[name="hasDharmaName"]')),
+      actionButtons: Array.from(document.querySelectorAll('button[data-mode]')),
+    };
+
+    function clearResult() {
+      els.result.className = 'result';
+      els.result.innerHTML = '';
+    }
+
+    function clearErrors() {
+      setFieldError(els.nameError, '');
+      setFieldError(els.dharmaNameError, '');
+      setFieldError(els.phoneError, '');
+    }
+
+    function setLoading(isLoading) {
+      els.keyForm.classList.toggle('loading', isLoading);
+      els.actionButtons.forEach((button) => {
+        button.disabled = isLoading;
+      });
+    }
+
+    function getPayload() {
+      const data = new FormData(els.keyForm);
+      const hasDharmaName = data.get('hasDharmaName') === 'yes';
+      return {
+        name: data.get('name'),
+        dharmaName: hasDharmaName ? data.get('dharmaName') : '',
+        phone: data.get('phone'),
+      };
+    }
+
+    function validateForm() {
+      clearErrors();
+      let isValid = true;
+      const hasDharmaName = new FormData(els.keyForm).get('hasDharmaName') === 'yes';
+      const name = els.nameInput.value;
+      const dharmaName = els.dharmaNameInput.value;
+      const phone = els.phoneInput.value;
+      const namePattern = /^[A-Za-z\u4e00-\u9fff]+$/;
+
+      if (!name) {
+        setFieldError(els.nameError, '請輸入姓名。');
+        isValid = false;
+      } else if (!namePattern.test(name)) {
+        setFieldError(els.nameError, '姓名僅能輸入中文或英文，請勿包含空白或特殊符號。');
+        isValid = false;
+      }
+
+      if (hasDharmaName) {
+        if (!dharmaName) {
+          setFieldError(els.dharmaNameError, '請輸入法名。');
+          isValid = false;
+        } else if (!namePattern.test(dharmaName)) {
+          setFieldError(els.dharmaNameError, '法名僅能輸入中文或英文，請勿包含空白或特殊符號。');
+          isValid = false;
+        }
+      }
+
+      if (!phone) {
+        setFieldError(els.phoneError, '請輸入手機號碼。');
+        isValid = false;
+      } else if (!/^\d+$/.test(phone)) {
+        setFieldError(els.phoneError, '手機號碼僅能輸入數字，請勿包含空白或特殊符號。');
+        isValid = false;
+      } else if (phone.length !== 10) {
+        setFieldError(els.phoneError, '手機號碼需為 10 碼數字。');
+        isValid = false;
+      }
+
+      return isValid;
+    }
+
+    function handleLookupResult(response) {
+      if (!response || response.ok !== true) {
+        showMessage('查詢失敗', response && response.message ? response.message : '目前查詢沒有成功，請稍後再試一次。');
+        return;
+      }
+
+      if (response.found) {
+        if (response.multiple) {
+          showMessage(
+            '查到多筆資料',
+            '此組資料查詢到多筆報名紀錄，系統無法判斷應處理哪一筆資料。請聯繫管理員協助確認。',
+            null,
+            null,
+            response.adminPhone || ''
+          );
+          return;
+        }
+
+        const registration = response.registration;
+        if (state.mode === 'new') {
+          showMessage(
+            '看起來已經報名過了',
+            '這組資料已經有報名紀錄，先不要再送一次。若要調整資料、重新報名或取消，請開啟修改表單處理。',
+            registration
+          );
+          return;
+        }
+
+        showMessage(
+          '有找到報名紀錄',
+          registration.editUrl
+            ? '可以開啟修改表單，進去後依照表單內的選項重新報名或取消報名。'
+            : '有找到資料，但目前還沒有修改連結。請通知管理者到後台補寫修改連結。',
+          registration
+        );
+        return;
+      }
+
+      if (state.mode === 'edit') {
+        showMessage('查不到原本的報名', '這組資料目前沒有報名紀錄。如果你確定要報名，請改用新報名。', null, null);
+        return;
+      }
+
+      const targetUrl = response.formUrl || state.formUrl;
+      if (state.mode === 'new') {
+        showRedirectMessage(targetUrl);
+        setTimeout(() => goToUrl(targetUrl), 350);
+        return;
+      }
+
+      showMessage(
+        '目前查不到報名紀錄',
+        '這組資料目前沒有報名紀錄，請先確認姓名與手機號碼是否正確；若需報名，請點選新報名。',
+        null,
+        null
+      );
+    }
+
+    function showMessage(title, message, registration, fallbackUrl, adminPhone) {
+      const details = registration ? `
+        <div class="details">
+          <div>姓名：${escapeHtml(registration.name)}</div>
+          <div>法名：${escapeHtml(registration.dharmaName)}</div>
+          <div>手機：${escapeHtml(registration.phone)}</div>
+          <div>報名時間：${escapeHtml(registration.timestamp)}</div>
+        </div>
+      ` : '';
+
+      const editButton = registration && registration.editUrl ? `
+        <a class="button primary" href="${escapeAttribute(registration.editUrl)}" target="_blank" rel="noopener">開啟修改表單</a>
+      ` : '';
+
+      const newButton = fallbackUrl ? `
+        <a class="button primary" href="${escapeAttribute(fallbackUrl)}" target="_blank" rel="noopener">前往報名表</a>
+      ` : '';
+
+      const adminPhoneButton = adminPhone ? `
+        <a class="button warn" href="tel:${escapeAttribute(normalizePhoneLink(adminPhone))}">聯繫管理員：${escapeHtml(adminPhone)}</a>
+      ` : '';
+
+      els.result.innerHTML = `
+        <strong>${escapeHtml(title)}</strong>
+        <p>${escapeHtml(message)}</p>
+        ${details}
+        <div class="result-actions">${editButton}${newButton}${adminPhoneButton}</div>
+      `;
+      els.result.classList.add('show');
+      els.result.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    }
+
+    function escapeHtml(value) {
+      return String(value || '')
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#039;');
+    }
+
+    function escapeAttribute(value) {
+      return escapeHtml(value).replace(/`/g, '&#096;');
+    }
+
+    function normalizePhoneLink(value) {
+      return String(value || '').replace(/[^\d+]/g, '');
+    }
+
+    function setFieldError(target, message) {
+      target.textContent = message;
+      target.classList.toggle('show', Boolean(message));
+    }
+
+    function goToUrl(url) {
+      if (!url || url === '#') {
+        showMessage('無法開啟報名表', '目前尚未設定報名表連結，請聯繫管理員協助處理。');
+        return;
+      }
+
+      window.top.location.href = url;
+    }
+
+    function showRedirectMessage(url) {
+      showMessage(
+        '正在前往報名表',
+        '若頁面沒有自動開啟，請點選下方按鈕前往報名表。',
+        null,
+        url
+      );
+    }
+
+    els.actionButtons.forEach((button) => {
+      button.addEventListener('click', () => {
+        state.mode = button.dataset.mode;
+      });
+    });
+
+    els.dharmaNameOptions.forEach((option) => {
+      option.addEventListener('change', () => {
+        const shouldShow = option.value === 'yes' && option.checked;
+        els.dharmaNameField.classList.toggle('hidden', !shouldShow);
+        els.dharmaNameInput.required = shouldShow;
+        if (!shouldShow) els.dharmaNameInput.value = '';
+        setFieldError(els.dharmaNameError, '');
+      });
+    });
+
+    els.nameInput.addEventListener('input', () => {
+      setFieldError(els.nameError, '');
+    });
+
+    els.dharmaNameInput.addEventListener('input', () => {
+      setFieldError(els.dharmaNameError, '');
+    });
+
+    els.phoneInput.addEventListener('input', () => {
+      setFieldError(els.phoneError, '');
+    });
+
+    els.keyForm.addEventListener('submit', (event) => {
+      event.preventDefault();
+      if (!validateForm()) return;
+
+      setLoading(true);
+      clearResult();
+
+      google.script.run
+        .withSuccessHandler((response) => {
+          setLoading(false);
+          handleLookupResult(response);
+        })
+        .withFailureHandler((error) => {
+          setLoading(false);
+          showMessage('系統忙線中', error && error.message ? error.message : '目前沒有查詢成功，請稍後再試一次。');
+        })
+        .lookupRegistration(getPayload());
+    });
+
+    google.script.run.withSuccessHandler((bootstrap) => {
+      state.formUrl = bootstrap.formUrl;
+      if (bootstrap.keyFields) {
+        bootstrap.keyFields.forEach((field) => {
+          const label = els[`${field.id}Label`];
+          if (label && field.column) label.textContent = field.column;
+        });
+      }
+      if (bootstrap.dharmaNameColumn) {
+        els.dharmaNameLabel.textContent = bootstrap.dharmaNameColumn;
+      }
+      if (bootstrap.adminPhone) {
+        const phoneHref = normalizePhoneLink(bootstrap.adminPhone);
+        els.footerContact.innerHTML = `若有任何問題，請聯繫管理員，電話：<a href="tel:${escapeAttribute(phoneHref)}">${escapeHtml(bootstrap.adminPhone)}</a>`;
+      } else {
+        els.footerContact.textContent = '若有任何問題，請聯繫管理員。';
+      }
+    }).getBootstrap();
+  </script>
+</body>
+</html>
