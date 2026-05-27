@@ -1,2 +1,12 @@
 填問券連結:https://docs.google.com/forms/d/e/1FAIpQLSeFfBA405xEHrmRQxYPPLQwzewTGJsYLEJDA-BPsG4cDc27Tw/viewform?usp=dialog
 後台:https://docs.google.com/spreadsheets/d/1OpY8f4kVncwmATe9X8qZ-ibGj64TnwkeHv1CPrpkOYc/edit?gid=1061612594#gid=1061612594
+=================================================
+1.多筆報名問題 (姓名+電話)
+2.取消報名 - 刪除線、改顏色 => 新報名
+3.多活動頁功能
+4.統計資訊獨立頁面
+=================================================
+4.統計功能
+A.每台車搭車人數，去程多少人、回程多少人 (H-L)
+B.同名人提示
+=================================================
